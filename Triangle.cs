@@ -49,12 +49,12 @@ namespace Pascals
                 DOT_SIZE = 1;
 
             Bitmap ans = new Bitmap(ROWS * DOT_SIZE, ROWS * DOT_SIZE);
-            for (int y = 0; y < ans.Height; ++y)
-                for (int x = 0; x < ans.Width; ++x)
-                    ans.SetPixel(x, y, Color.White);
+            var graphics = Graphics.FromImage(ans);
+            graphics.Clear(Color.White);
+
             //0 is black, and the other colors are rainbow
             Color[] color = new Color[MOD];
-            color[0] = Color.White;
+            color[0] = Color.Black;
             for (int i = 1; i < MOD; ++i)
                 color[i] = ColorHandler.HSVtoColor(255 * (i - 1) / MOD, 255, 255);
             //TODO get rid of
