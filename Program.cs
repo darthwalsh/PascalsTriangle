@@ -4,55 +4,107 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Drawing.Imaging;
 using System.Drawing;
+using System.Diagnostics;
 
 namespace Pascals
 {
+    class Config
+    {
+        public int Rows;
+        public int Mod;
+        public bool Text;
+        public string SaveFile;
+    }
+
     class Program
     {
         static void Main(string[] args)
         {
-            int ROWS = 0;
-            int MOD = 0;
-            bool MAKE_IMAGE = false;
-            Console.WriteLine("How many rows?...");
-            String reply = Console.ReadLine();
-            try
+            Config config = GetConfig(args);
+
+            Triangle tri = new Triangle(config.Rows, config.Mod);
+
+            if (config.Text)
             {
-                ROWS = Int32.Parse(reply);
+                tri.Print();
             }
-            catch { }
-            Console.WriteLine("Modded to?");
-            reply = Console.ReadLine();
-            try
-            {
-                MOD = Int32.Parse(reply);
-            }
-            catch { }
-            if (ROWS < 1)
-                ROWS = 1;
-            if (MOD < 1)
-                MOD = 1;
-            Console.WriteLine("Creating a Pascal's Triangle with {0} rows, mod {1}", ROWS, MOD);
-            Triangle tri = new Triangle(ROWS, MOD);
-            Console.WriteLine("Display as image, or as text? (i/t)");
-            reply = Console.ReadLine();
-            if (reply.ToLower() == "i")
-                MAKE_IMAGE = true;
-            if (MAKE_IMAGE)
+            else
             {
                 Form screen = new Form();
-                screen.Text = "Pascal Triangle with " + ROWS + " rows, mod " + MOD;
+                screen.Text = "Pascal Triangle with " + config.Rows + " rows, mod " + config.Mod;
                 Bitmap pic = tri.Image();
                 GDI32.SaveImage(pic);
-                screen.SetBounds(30, 30, pic.Width + 16, pic.Height  + 38);
+                screen.SetBounds(30, 30, pic.Width + 16, pic.Height + 38);
                 screen.Show();
                 screen.SetDesktopLocation(0, 0);
                 Graphics g = Graphics.FromHwnd(screen.Handle);
                 g.DrawImage(pic, 0, 0);
             }
-            else
-                tri.Print();
-            Console.ReadLine();
+
+            if (Debugger.IsAttached)
+            {
+                Console.ReadLine();
+            }
+        }
+
+        static Config GetConfig(string[] args)
+        {
+            if (args.Length == 0)
+            {
+                return ReadConfig();
+            }
+
+            if (args.Length == 2 || args.Length == 3)
+            {
+                var config = new Config
+                {
+                    Rows = Int32.Parse(args[0]),
+                    Mod = Int32.Parse(args[1]),
+                    Text = true,
+                };
+                if (args.Length == 3)
+                {
+                    config.Text = false;
+                    config.SaveFile = args[2];
+                }
+                return config;
+            }
+
+            PrintUsage();
+            Environment.Exit(1);
+            throw null;
+        }
+
+        static void PrintUsage()
+        {
+            Console.WriteLine("Usage: PascalsTriangle [rows  mod [fileName]]");
+            Console.WriteLine("");
+            Console.WriteLine("Displays Pascal's Triangle, modulus a custom parameter. Try 2, 4, 6, or 12.");
+            Console.WriteLine("Optionally pass row count and modulus. Optionally pass a file name to save image.");
+        }
+
+        static Config ReadConfig()
+        {
+            var config = new Config();
+
+            Console.WriteLine("How many rows?...");
+            String reply = Console.ReadLine();
+            config.Rows = Int32.Parse(reply);
+            Console.WriteLine("Modded to?");
+            reply = Console.ReadLine();
+            config.Mod = Int32.Parse(reply);
+            if (config.Rows < 1)
+                config.Rows = 1;
+            if (config.Mod < 1)
+                config.Mod = 1;
+            Console.WriteLine("Creating a Pascal's Triangle with {0} rows, mod {1}", config.Rows, config.Mod);
+            Console.WriteLine("Display as image, or as text? (i/t)");
+            reply = Console.ReadLine();
+
+            if (reply.ToLower() != "i")
+                config.Text = true;
+
+            return config;
         }
     }
 
