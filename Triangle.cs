@@ -8,9 +8,9 @@ namespace Pascals
 {
     class Triangle
     {
-        private List<int[]> rows;
-        private int MOD;
-        private int ROWS;
+        List<int[]> rows;
+        int MOD;
+        int ROWS;
         public Triangle(int numRows, int mod)
         {
             ROWS = numRows;
@@ -23,11 +23,11 @@ namespace Pascals
                     rows[i][0] = 1;
                 else
                     for(int n = 0; n <= i; n++)
-                        rows[i][n] = getSum(i,n, mod);
+                        rows[i][n] = GetSum(i,n, mod);
             }
         }
 
-        private int getSum(int i, int n, int mod)
+        int GetSum(int i, int n, int mod)
         {
             int[] row = rows[i-1];
             int left = 0;
@@ -60,11 +60,11 @@ namespace Pascals
             //TODO get rid of
             for (int r = 0; r < ROWS; ++r)
                 for (int c = 0; c <= r; ++c)
-                    changeDot(c, r, ROWS, color[rows[r][c]], DOT_SIZE, ans);
+                    ChangeDot(c, r, ROWS, color[rows[r][c]], DOT_SIZE, ans);
             return ans;
         }
 
-        private void changeDot(int column, int row, int ROWS,
+        void ChangeDot(int column, int row, int ROWS,
                                Color c, int dotSize, Bitmap img)
         {
             int offset = dotSize * (ROWS - row - 1) / 2;
