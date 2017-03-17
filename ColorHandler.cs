@@ -1,9 +1,6 @@
 ﻿// PascalsTriangle, by Ken Getz July 2003
 //http://msdn.microsoft.com/en-us/magazine/cc164113.aspx
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
 
 namespace Pascals
