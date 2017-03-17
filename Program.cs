@@ -30,20 +30,25 @@ namespace Pascals
             }
             else
             {
-                Form screen = new Form();
-                screen.Text = "Pascal Triangle with " + config.Rows + " rows, mod " + config.Mod;
-                Bitmap pic = tri.Image();
-                GDI32.SaveImage(pic);
-                screen.SetBounds(30, 30, pic.Width + 16, pic.Height + 38);
-                screen.Show();
-                screen.SetDesktopLocation(0, 0);
-                Graphics g = Graphics.FromHwnd(screen.Handle);
-                g.DrawImage(pic, 0, 0);
-            }
+                Bitmap image = tri.Image();
 
-            if (Debugger.IsAttached)
-            {
-                Console.ReadLine();
+                if (config.SaveFile != null)
+                {
+                    image.Save(config.SaveFile, ImageFormat.Bmp);
+                }
+                else
+                {
+                    Form screen = new Form
+                    {
+                        Text = "Pascal Triangle with " + config.Rows + " rows, mod " + config.Mod
+                    };
+                    screen.SetBounds(30, 30, image.Width + 16, image.Height + 38);
+                    screen.Show();
+                    screen.SetDesktopLocation(0, 0);
+                    Graphics g = Graphics.FromHwnd(screen.Handle);
+                    g.DrawImage(image, 0, 0);
+                    Console.ReadLine();
+                }
             }
         }
 
@@ -105,60 +110,6 @@ namespace Pascals
                 config.Text = true;
 
             return config;
-        }
-    }
-
-    class GDI32
-    { //http://www.c-sharpcorner.com/UploadFile/perrylee/ScreenCapture11142005234547PM/ScreenCapture.aspx
-        [DllImport("GDI32.dll")]
-        public static extern bool BitBlt(int hdcDest, int nXDest, int nYDest, int nWidth, int nHeight, int hdcSrc, int nXSrc, int nYSrc, int dwRop);
-        [DllImport("GDI32.dll")]
-        public static extern int CreateCompatibleBitmap(int hdc, int nWidth, int nHeight);
-        [DllImport("GDI32.dll")]
-        public static extern int CreateCompatibleDC(int hdc);
-        [DllImport("GDI32.dll")]
-        public static extern bool DeleteDC(int hdc);
-        [DllImport("GDI32.dll")]
-        public static extern bool DeleteObject(int hObject);
-        [DllImport("GDI32.dll")]
-        public static extern int GetDeviceCaps(int hdc, int nIndex);
-        [DllImport("GDI32.dll")]
-        public static extern int SelectObject(int hdc, int hgdiobj);
-        [DllImport("User32.dll")]
-        public static extern int GetDesktopWindow();
-        [DllImport("User32.dll")]
-        public static extern int GetWindowDC(int hWnd);
-        [DllImport("User32.dll")]
-        public static extern int ReleaseDC(int hWnd, int hDC);
-
-        static int pictNumber = 0;
-
-        public static Bitmap CaptureScreen()
-        {
-            int hdcSrc = GetWindowDC(GetDesktopWindow()),
-            hdcDest = GDI32.CreateCompatibleDC(hdcSrc),
-            hBitmap = GDI32.CreateCompatibleBitmap(
-                            hdcSrc,
-                            GDI32.GetDeviceCaps(hdcSrc, 8),
-                            GDI32.GetDeviceCaps(hdcSrc, 10));
-            GDI32.SelectObject(hdcDest, hBitmap);
-            GDI32.BitBlt(hdcDest, 0, 0, GDI32.GetDeviceCaps(hdcSrc, 8),
-            GDI32.GetDeviceCaps(hdcSrc, 10), hdcSrc, 0, 0, 0x00CC0020);
-            Bitmap screen = Image.FromHbitmap(new IntPtr(hBitmap));
-            Cleanup(hBitmap, hdcSrc, hdcDest);
-            return screen;
-        }
-        private static void Cleanup(int hBitmap, int hdcSrc, int hdcDest)
-        {
-            ReleaseDC(GetDesktopWindow(), hdcSrc);
-            GDI32.DeleteDC(hdcDest);
-            GDI32.DeleteObject(hBitmap);
-        }
-        public static void SaveImage(Bitmap image)
-        {
-            // Puts the file into "debugging output"
-            pictNumber++;
-            image.Save("todelete" + pictNumber + ".bmp", ImageFormat.Bmp);
         }
     }
 }
