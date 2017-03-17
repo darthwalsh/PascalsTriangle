@@ -47,8 +47,14 @@ namespace Pascals
                     screen.SetDesktopLocation(0, 0);
                     Graphics g = Graphics.FromHwnd(screen.Handle);
                     g.DrawImage(image, 0, 0);
-                    Console.ReadLine();
+                    Application.Run(screen);
                 }
+            }
+
+            if (Debugger.IsAttached)
+            {
+                Console.WriteLine("Press any key to continue . . .");
+                Console.ReadLine();
             }
         }
 
